@@ -22,7 +22,7 @@ class calculator:
     def parse_number(self, formula):
         i = 0
         num = ""
-        while formula[i].isdigit():
+        while formula[i].isdigit() or formula[i] == '.':
             num += formula[i]
             i += 1
             if i == (len(formula)):
@@ -39,19 +39,26 @@ class calculator:
                 break
         return exp, (i-1)
     
+    def is_float(self, num):
+        try:
+            float(num)
+            return True
+        except ValueError:
+            return False
+    
     def to_rpn(self, formula):
         precedence_dict = {'^': 0, '*': 1, '/': 1, '+': 2, '-': 2}    # precedence for each operator
         rpn = []
         operators = []
         right_paren, left_paren = ')', '('
         for i in range(0,len(formula)):
-            if formula[i].isdigit():
+            if formula[i].isdigit() or self.is_float(formula[i]):
                 rpn.append(formula[i])
             elif (formula[i] == '+' or formula[i] == '-' or formula[i] == '*'
                   or formula[i] == '/' or formula[i] == '^'):
                 if len(operators) > 0:
                     top = operators[-1]
-                    while ((not len(operators) == 0) and ((precedence_dict[formula[i]] < precedence_dict[top]) or 
+                    while ((not len(operators) == 0) and ((precedence_dict[formula[i]] > precedence_dict[top]) or 
                             ((precedence_dict[formula[i]] == precedence_dict[top]) and not (formula[i] == '^'))) and not top == left_paren):
                         rpn.append(operators.pop())
                 operators.append(formula[i])
@@ -67,21 +74,30 @@ class calculator:
                     print "Error: mismatched parentheses."
                     return -1
             elif formula[i] == "sin":
-                rpn.append(formula[i])
+                operators.append(formula[i])
             elif formula[i] == "cos":
-                rpn.append(formula[i])
+                operators.append(formula[i])
             elif formula[i] == "tan":
-                rpn.append(formula[i])
+                operators.append(formula[i])
             elif formula[i] == "cot":
-                rpn.append(formula[i])
+                operators.append(formula[i])
             elif formula[i] == "ln":
-                rpn.append(formula[i])
+                operators.append(formula[i])
             elif formula[i] == "log":
-                rpn.append(formula[i])
+                operators.append(formula[i])
         while len(operators) > 0:
             rpn.append(operators.pop())
         print "The formula converted to Reverse Polish Notation:", rpn
         return rpn
+    
+    def is_operator(self, val):
+        if val == '+' or val == '-':
+            return True
+        if val == '*' or val == '/':
+            return True
+        if val == '^':
+            return True
+        return False
     
     def parse_equation(self, formula):
         exp = []
@@ -100,7 +116,7 @@ class calculator:
                     exp.append('+')
                     i += 1
                 elif formula[i] == '-':
-                    if i == 0 or (formula[i-1].isalpha() or formula[i-1] == ')' or formula[i-1] == '('):
+                    if i == 0 or (formula[i-1].isalpha() or formula[i-1] == ')' or formula[i-1] == '(' or self.is_operator(formula[i-1])):
                         val, cnt = self.parse_number(formula[i+1:])
                         val = "-" + val
                         exp.append(val)
@@ -130,8 +146,8 @@ class calculator:
     
     def evaluate_expression(self, rpn):
         operands = []
-        for i in range(len(rpn)):
-            if rpn[i].isdigit():
+        for i in range(0, len(rpn)):
+            if rpn[i].isdigit() or self.is_float(rpn[i]):
                 operands.append(rpn[i])
             else:
                 operator = rpn[i]
