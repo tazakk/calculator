@@ -11,6 +11,7 @@ logarithmic, and trigonometric functions with operator precedence and parenthese
 @author: Zachary Dehaan
 """
 
+# Import NumPy to use np.log(), np.log10(), np.sin(), np.cos(), and np.tan()
 import numpy as np
 
 # The class that contains all pertinent methods
@@ -328,7 +329,10 @@ class calculator:
             print "\nThe answer is", float(operands[0])
             return float(operands.pop())
             
-    
+# Runs the calculator program.
+#
+# Uses a loop that allows for multiple calculations per run. Ends when the user
+# is finished.
 def main():
     my_calc = calculator()
     cont = True
